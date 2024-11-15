@@ -6,7 +6,7 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 14:55:34 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/15 16:10:15 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/15 17:13:22 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,5 +18,6 @@
 
 # include <fcntl.h>
 # include <unistd.h> 
+# include <stdlib.h> 
 
 #endif
