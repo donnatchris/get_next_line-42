@@ -6,8 +6,13 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 14:53:52 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/15 14:54:24 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:39:00 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+char *get_next_line(int fd)
+{
+	
+}
