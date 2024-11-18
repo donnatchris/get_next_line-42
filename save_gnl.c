@@ -122,7 +122,6 @@ char	*get_next_line(int fd)
 		backup[0] = '\0';
 	}
 	line = backup;
-	backup = NULL;
 	buff  = (char *) malloc(BUFFER_SIZE);
 	if (!buff)
 	{
@@ -140,7 +139,7 @@ char	*get_next_line(int fd)
 				free(line);
 				return (NULL);
 			}
-			return (NULL);
+			return (line);
 		}
 		eol_pos = ft_eol_search(buff, bytes_read);
 		temp_line = line;
@@ -148,7 +147,7 @@ char	*get_next_line(int fd)
 		{
 			eol = 1;
 			line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, eol_pos + 1);
-			backup = ft_substr(buff, eol_pos + 1, BUFFER_SIZE - eol_pos);
+			backup = ft_substr(buff, eol_pos, BUFFER_SIZE - eol_pos);
 		}
 		else
 		{
@@ -180,7 +179,7 @@ int	main(void)
 	{
 		line = get_next_line(fd);
 		printf("%s", line);
-//		sleep(1);
+		sleep(1);
 	}
 	return (0);
 }
