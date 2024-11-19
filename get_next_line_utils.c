@@ -22,48 +22,32 @@ size_t	ft_strlen(const char *str)
 	return (len);
 }
 
-size_t	ft_eol_search(char *str, size_t bytes_read)
+size_t ft_eol_search(const char *str, size_t len)
 {
-	size_t	pos;
-
-	pos = 0;
-	while (pos < bytes_read)
-	{
-		if (str[pos] == '\n')
-			return (pos);
-		pos++;
-	}
-	return (bytes_read);
+    for (size_t i = 0; i < len; i++)
+    {
+        if (str[i] == '\n')
+            return (i);
+    }
+    return (len); // Retourne la longueur si aucun '\n' trouvé
 }
 
-char	*ft_strjoin(char const *s1, size_t size1, char const *s2, size_t size2)
+char *ft_strjoin(char *s1, const char *s2, size_t len2)
 {
-	char	*join;
-	size_t	size;
-	size_t	i;
-	size_t	j;
+    size_t len1 = s1 ? ft_strlen(s1) : 0;
+    char *result = (char *)malloc(len1 + len2 + 1);
+    if (!result)
+        return (NULL);
 
-	size = size1 + size2;
-	join = (char *) malloc((size + 1) * sizeof(char));
-	if (join == NULL)
-		return (NULL);
-	i = 0;
-	while (i < size1)
-	{
-		join[i] = s1[i];
-		i++;
-	}
-	j = 0;
-	while (j < size2)
-	{
-		join[i + j] = s2[j];
-		j++;
-	}
-	join[i + j] = '\0';
-	return (join);
+    if (s1)
+        ft_memcpy(result, s1, len1);
+    ft_memcpy(result + len1, s2, len2);
+    result[len1 + len2] = '\0';
+
+    return (result);
 }
 
-static size_t	ft_cpy_len(char const *s, unsigned int start, size_t len)
+size_t	ft_cpy_len(char const *s, unsigned int start, size_t len)
 {
 	size_t	cpy_len;
 
