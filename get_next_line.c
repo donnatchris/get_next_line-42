@@ -30,26 +30,62 @@ static char	*ft_strdup(const char *s)
 	return (dup);
 }
 
+static char	*ft_initialize_line(char **backup)
+{
+	char	*line;
+
+	if (!*backup)
+	{
+		*backup = malloc(1);
+		if (!*backup)
+			return (NULL);
+		(*backup)[0] = '\0';
+	}
+	line = ft_strdup(*backup);
+	if (!line)
+		return (NULL);
+	free(*backup);
+	*backup = NULL;
+	return (line);
+}
+
+static char	*ft_handle_read(char **line, char *buff, \
+	size_t bytes_read, char **backup)
+{
+	size_t	eol_pos;
+	char	*temp_line;
+
+	eol_pos = ft_eol_search(buff, bytes_read);
+	temp_line = *line;
+	if (eol_pos < bytes_read)
+	{
+		*line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, eol_pos + 1);
+		if (!line)
+			return (NULL);
+		*backup = ft_substr(buff, eol_pos + 1, bytes_read - eol_pos - 1);
+		if (!backup)
+			return (NULL);
+	}
+	else
+	{
+		*line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, bytes_read);
+		if (!*line)
+			return (NULL);
+	}
+	return (free(temp_line), *line);
+}
+
 char	*get_next_line(int fd)
 {
 	char		*buff;
 	char		*line;
-	char		*temp_line;
 	size_t		bytes_read;
-	size_t		eol_pos;
 	static char	*backup = NULL;
 
-	if (!backup)
-	{
-		backup = (char *) malloc(1);
-		if (!backup)
-			return (NULL);
-		backup[0] = '\0';
-	}
-	line = ft_strdup(backup);
-	free(backup);
-	backup = NULL;
-	buff  = (char *) malloc(BUFFER_SIZE);
+	line = ft_initialize_line(&backup);
+	if (!line)
+		return (NULL);
+	buff = malloc(BUFFER_SIZE);
 	if (!buff)
 		return (free(line), NULL);
 	while (1)
@@ -63,19 +99,12 @@ char	*get_next_line(int fd)
 			free (line);
 			return (NULL);
 		}
-		eol_pos = ft_eol_search(buff, bytes_read);
-		temp_line = line;
-		if (eol_pos < bytes_read)
-		{
-			line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, eol_pos + 1);
-			backup = ft_substr(buff, eol_pos + 1, bytes_read - eol_pos -1);
+		if (!ft_handle_read(&line, buff, bytes_read, &backup))
 			break ;
-		}
-		line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, bytes_read);
-		free(temp_line);
+		if (backup)
+			break ;
 	}
-	free (buff);
-	return (line);
+	return (free(buff), line);
 }
 
 # include <stdio.h>
@@ -94,23 +123,8 @@ int	main(void)
 	{
 		line = get_next_line(fd);
 		printf("%s", line);
-//		sleep(1);
+		sleep(1);
 	}
 	return (0);
 }
-/*
-LA FONCTION READ
 
-ssize_t read(int fd, void *buf, size_t count);
-
-fd : Un descripteur de fichier.
-Il représente le fichier ou la source de données à partir de laquelle on souhaite lire.
-Il est généralement obtenu via un appel à open().
-Cela peut aussi être un descripteur spécial comme STDIN_FILENO pour l'entrée standard>
-
-buf : Un pointeur vers un buffer où les données lues seront stockées.
-C'est une zone mémoire où read() mettra les octets qu'il a lus.
-
-count : Le nombre maximum d'octets à lire.
-C'est la taille du buffer buf, et le nombre d'octets que vous souhaitez tenter de lire.
-*/
