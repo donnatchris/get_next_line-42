@@ -12,6 +12,24 @@
 
 #include "get_next_line.h"
 
+static char	*ft_strdup(const char *s)
+{
+	size_t		i;
+	char		*dup;
+
+	dup = (char *) malloc (sizeof(*dup) * (ft_strlen(s) + 1));
+	if (dup == NULL)
+		return (NULL);
+	i = 0;
+	while (s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
 char	*get_next_line(int fd)
 {
 	char		*buff;
@@ -19,56 +37,42 @@ char	*get_next_line(int fd)
 	char		*temp_line;
 	size_t		bytes_read;
 	size_t		eol_pos;
-	int 		eol;
 	static char	*backup = NULL;
 
-	eol = 0;
-	if (backup == NULL)
+	if (!backup)
 	{
 		backup = (char *) malloc(1);
-		if (backup == NULL)
+		if (!backup)
 			return (NULL);
 		backup[0] = '\0';
 	}
-	line = backup;
+	line = ft_strdup(backup);
+	free(backup);
 	backup = NULL;
 	buff  = (char *) malloc(BUFFER_SIZE);
 	if (!buff)
-	{
-		free(line);
-		return (NULL);
-	}
-	while (!eol)
+		return (free(line), NULL);
+	while (1)
 	{
 		bytes_read = read(fd, buff, BUFFER_SIZE);
 		if (bytes_read <= 0)
 		{
 			free(buff);
-			if (line[0] == '\0')
-			{
-				free(line);
-				return (NULL);
-			}
+			if (bytes_read == 0 && line[0] != '\0')
+				return (line);
+			free (line);
 			return (NULL);
 		}
 		eol_pos = ft_eol_search(buff, bytes_read);
 		temp_line = line;
 		if (eol_pos < bytes_read)
 		{
-			eol = 1;
 			line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, eol_pos + 1);
-			backup = ft_substr(buff, eol_pos + 1, BUFFER_SIZE - eol_pos);
+			backup = ft_substr(buff, eol_pos + 1, bytes_read - eol_pos -1);
+			break ;
 		}
-		else
-		{
-			line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, bytes_read);
-		}
-	}
-	free(temp_line);
-	if (!line)
-	{
-		free(buff);
-		return (NULL);
+		line = ft_strjoin(temp_line, ft_strlen(temp_line), buff, bytes_read);
+		free(temp_line);
 	}
 	free (buff);
 	return (line);
