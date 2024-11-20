@@ -29,7 +29,7 @@ size_t ft_eol_search(const char *str, size_t len)
         if (str[i] == '\n')
             return (i);
     }
-    return (len); // Retourne la longueur si aucun '\n' trouvé
+    return (len);
 }
 
 char *ft_strjoin(char *s1, const char *s2, size_t len2)

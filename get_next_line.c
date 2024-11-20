@@ -23,6 +23,42 @@ char *ft_strndup(const char *s, size_t len)
     return (dup);
 }
 
+char	*ft_strdup(const char *s)
+{
+	size_t		i;
+	char		*dup;
+
+	dup = (char *) malloc (sizeof(*dup) * (ft_strlen(s) + 1));
+	if (dup == NULL)
+		return (NULL);
+	i = 0;
+	while (s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	size_t			i;
+	size_t			len;
+	unsigned char	uc;
+
+	len = ft_strlen(s);
+	uc = (unsigned char) c;
+	i = 0;
+	while (i <= len)
+	{
+		if ((unsigned char) s[i] == uc)
+			return ((char *) &s[i]);
+		i++;
+	}
+	return (NULL);
+}
+
 char	*ft_calloc(size_t nmemb, size_t size)
 {
 	char	*new;
@@ -71,32 +107,29 @@ char	*ft_memmove(char *dest, const char *src, size_t n)
 	return (dest);
 }
 
-size_t ft_read(int fd, char **buff, char **line, t_raw *remainder)
+size_t ft_read(int fd, char **buff, char **line, char **remainder)
 {
-    ssize_t n_read;
-    size_t  eol_i;
-    char    *temp;
+    ssize_t	n_read;
+    char	*temp;
+    char	*newline_pos;
 
     while (1)
     {
         n_read = read(fd, *buff, BUFFER_SIZE);
-        if (n_read == -1)
+        if (n_read <= 0)
             return (0);
-        if (n_read == 0)
-            return (0);
-        eol_i = ft_eol_search(*buff, n_read);
-        if (eol_i < (size_t)n_read)
+        (*buff)[n_read] = '\0';
+        newline_pos = ft_strchr(*buff, '\n');
+        if (newline_pos)
         {
-            temp = ft_strjoin(*line, *buff, eol_i + 1);
+            size_t eol_index = newline_pos - *buff;
+            temp = ft_strjoin(*line, *buff, eol_index + 1);
             if (!temp)
                 return (0);
             free(*line);
             *line = temp;
-            remainder->len = n_read - (eol_i + 1);
-            free(remainder->str);
-            remainder->str = ft_strndup(&(*buff)[eol_i + 1], remainder->len);
-            if (!remainder->str)
-                return (0);
+            free(*remainder);
+            *remainder = ft_strdup(newline_pos + 1);
             return (1);
         }
         temp = ft_strjoin(*line, *buff, n_read);
@@ -107,84 +140,55 @@ size_t ft_read(int fd, char **buff, char **line, t_raw *remainder)
     }
 }
 
-char *ft_line(int fd, char **buff, t_raw *remainder)
+char *ft_line(int fd, char **buff, char **remainder)
 {
-    size_t  eol_i;
-    char    *line = NULL;
+    char	*newline_pos;
+    char	*line;
 
-    if (remainder->str && remainder->len > 0)
-    {
-        eol_i = ft_eol_search(remainder->str, remainder->len);
-        if (eol_i < remainder->len)
+    if (*remainder)
+        newline_pos = ft_strchr(*remainder, '\n');
+        if (newline_pos)
         {
-            line = ft_strndup(remainder->str, eol_i + 1);
-            if (!line)
-                return (NULL);
-            if (eol_i + 1 < remainder->len)
-            {
-                remainder->len -= (eol_i + 1);
-                ft_memmove(remainder->str, &remainder->str[eol_i + 1], remainder->len);
-            }
-            else
-            {
-                free(remainder->str);
-                remainder->str = NULL;
-                remainder->len = 0;
-            }
+            line = ft_strndup(*remainder, newline_pos - *remainder + 1);
+            char *new_remainder = ft_strdup(newline_pos + 1);
+            free(*remainder);
+            *remainder = new_remainder;
             return (line);
         }
-        line = ft_strndup(remainder->str, remainder->len);
-        if (!line)
-            return (NULL);
-        free(remainder->str);
-        remainder->str = NULL;
-        remainder->len = 0;
+        line = ft_strdup(*remainder);
+        free(*remainder);
+        *remainder = NULL;
+    }
+    else
+    {
+        line = NULL;
     }
     if (ft_read(fd, buff, &line, remainder) == 0)
     {
-        return (free(line), NULL);
+        free(line);
+        return (NULL);
     }
     return (line);
 }
 
 char *get_next_line(int fd)
 {
-    char *line;
-    char *buff;
-    static t_raw remainder;
+    char		*line;
+    char		*buff;
+    static char	*remainder = NULL;
 
     if (fd < 0 || BUFFER_SIZE <= 0)
         return (NULL);
-
-    buff = ft_calloc(BUFFER_SIZE, 1);
+    buff = (char *)malloc(BUFFER_SIZE + 1);
     if (!buff)
         return (NULL);
-
-    if (!remainder.str)
-    {
-        remainder.str = ft_calloc(BUFFER_SIZE, 1);
-        if (!remainder.str)
-        {
-            free(buff);
-            return (NULL);
-        }
-        remainder.len = 0;
-    }
-
     line = ft_line(fd, &buff, &remainder);
-
     free(buff);
-    if (remainder.len == 0)
-    {
-        free(remainder.str);
-        remainder.str = NULL;
-    }
-
     return (line);
 }
 
+/*
 #include <stdio.h>
-
 int main(void)
 {
     int     fd;
@@ -209,4 +213,4 @@ int main(void)
     }
     return (0);
 }
-
+*/
