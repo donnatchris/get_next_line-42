@@ -12,24 +12,6 @@
 
 #include "get_next_line.h"
 
-void	ft_free(size_t count, ...)
-{
-	va_list	args;
-	size_t	i;
-	void	*ptr;
-
-	va_start(args, count);
-	i = 0;
-	while (i < count)
-	{
-		ptr = va_arg(args, void *);
-		if (ptr)
-			free(ptr);
-		i++;
-	}
-	va_end(args);
-}
-
 size_t ft_read(int fd, char **buff, char **line, char **remainder)
 {
     size_t	n_read;
@@ -64,7 +46,23 @@ size_t ft_read(int fd, char **buff, char **line, char **remainder)
     }
 }
 
-char *ft_line(int fd, char **buff, char **remainder)
+
+char	*ft_return_cpy_remainder(char *line, char **newline_pos, char **remainder)
+{
+            char	*new_remainder;
+
+			line = ft_strndup(*remainder, *newline_pos - *remainder + 1);
+			if (!line)
+				return (NULL);
+            new_remainder = ft_strndup(*newline_pos + 1, ft_strlen(*newline_pos + 1));
+			if (!new_remainder)
+				return (line);
+            ft_free(1, *remainder);
+            *remainder = new_remainder;
+            return (line);
+}
+
+char	*ft_line(int fd, char **buff, char **remainder)
 {
     char	*newline_pos;
     char	*line;
@@ -73,15 +71,10 @@ char *ft_line(int fd, char **buff, char **remainder)
 	{
         newline_pos = ft_strchr(*remainder, '\n');
         if (newline_pos)
-        {
-            line = ft_strndup(*remainder, newline_pos - *remainder + 1);
-            char *new_remainder = ft_strndup(newline_pos + 1, ft_strlen(newline_pos + 1));
-			if (!new_remainder)
-				return (line);
-            ft_free(1, *remainder);
-            *remainder = new_remainder;
-            return (line);
-        }
+		{
+			line = ft_return_cpy_remainder(line, &newline_pos, remainder);
+			return (line);
+		}
         line = ft_strndup(*remainder, ft_strlen(*remainder));
         ft_free(1, *remainder);
         *remainder = NULL;
