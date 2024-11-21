@@ -26,5 +26,12 @@ size_t	ft_strlen(const char *str);
 char	*ft_strndup(const char *s, size_t len);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strjoin(char *s1, const char *s2, size_t len2);
+size_t	ft_newline_in_buff(char **newline_pos, \
+	char **buff, char **line, char **remainder);
+size_t	ft_read(int fd, char **buff, char **line, char **remainder);
+char	*ft_return_cpy_remainder(char *line, \
+	char **newline_pos, char **remainder);
+char	*ft_line(int fd, char **buff, char **remainder);
+char	*get_next_line(int fd);
 
 #endif

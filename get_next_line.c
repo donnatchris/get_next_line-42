@@ -32,7 +32,6 @@ size_t	ft_newline_in_buff(char **newline_pos, \
 size_t	ft_read(int fd, char **buff, char **line, char **remainder)
 {
 	size_t	n_read;
-	size_t	eol_index;
 	char	*temp;
 	char	*newline_pos;
 
@@ -76,6 +75,7 @@ char	*ft_line(int fd, char **buff, char **remainder)
 	char	*newline_pos;
 	char	*line;
 
+	line = NULL;
 	if (*remainder)
 	{
 		newline_pos = ft_strchr(*remainder, '\n');
@@ -113,7 +113,7 @@ char	*get_next_line(int fd)
 	ft_free(1, buff);
 	return (line);
 }
-
+/*
 #include <stdio.h>
 int main(void)
 {
@@ -139,4 +139,4 @@ int main(void)
     }
     return (0);
 }
-
+*/
