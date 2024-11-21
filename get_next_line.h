@@ -19,20 +19,12 @@
 # include <fcntl.h>
 # include <unistd.h> 
 # include <stdlib.h> 
-#include <stdarg.h>
+# include <stdarg.h>
 
-typedef struct	s_raw
-{
-	char	*str;
-	size_t	len;
-}				t_raw;
-
-char *ft_strndup(const char *s, size_t len);
-size_t ft_read(int fd, char **buff, char **line, char **remainder);
-char *ft_line(int fd, char **buff, char **remainder);
-char *get_next_line(int fd);
+void	ft_free(size_t count, ...);
 size_t	ft_strlen(const char *str);
-size_t ft_eol_search(const char *str, size_t len);
-char *ft_strjoin(char *s1, const char *s2, size_t len2);
+char	*ft_strndup(const char *s, size_t len);
+char	*ft_strchr(const char *s, int c);
+char	*ft_strjoin(char *s1, const char *s2, size_t len2);
 
 #endif

@@ -30,42 +30,6 @@ void	ft_free(size_t count, ...)
 	va_end(args);
 }
 
-char *ft_strndup(const char *s, size_t len)
-{
-    char 	*dup;
-	size_t	i;
-
-	dup = (char *)malloc(len + 1);
-    if (!dup)
-        return (NULL);
-	i = 0;
-	while(i < len)
-	{
-		dup[i] = s[i];
-    	i++;
-	}
-	dup[len] = '\0';
-    return (dup);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	size_t			i;
-	size_t			len;
-	unsigned char	uc;
-
-	len = ft_strlen(s);
-	uc = (unsigned char) c;
-	i = 0;
-	while (i <= len)
-	{
-		if ((unsigned char) s[i] == uc)
-			return ((char *) &s[i]);
-		i++;
-	}
-	return (NULL);
-}
-
 size_t ft_read(int fd, char **buff, char **line, char **remainder)
 {
     size_t	n_read;
@@ -126,7 +90,7 @@ char *ft_line(int fd, char **buff, char **remainder)
         line = NULL;
     if (ft_read(fd, buff, &line, remainder) == 0)
     {
-        ft_free(1, line);
+        free(line);
         return (NULL);
     }
     return (line);

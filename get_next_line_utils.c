@@ -12,6 +12,24 @@
 
 #include "get_next_line.h"
 
+void	ft_free(size_t count, ...)
+{
+	va_list	args;
+	size_t	i;
+	void	*ptr;
+
+	va_start(args, count);
+	i = 0;
+	while (i < count)
+	{
+		ptr = va_arg(args, void *);
+		if (ptr)
+			free(ptr);
+		i++;
+	}
+	va_end(args);
+}
+
 size_t	ft_strlen(const char *str)
 {
 	size_t	len;
@@ -22,57 +40,66 @@ size_t	ft_strlen(const char *str)
 	return (len);
 }
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+char	*ft_strndup(const char *s, size_t len)
 {
-	size_t			i;
-	char			*d;
-	const char		*s;
+	char	*dup;
+	size_t	i;
 
-	if (!dst && !src)
+	dup = (char *)malloc(len + 1);
+	if (!dup)
 		return (NULL);
-	d = (char *) dst;
-	s = (const char *) src;
 	i = 0;
-	while (i < n)
+	while (i < len)
 	{
-		d[i] = s[i];
+		dup[i] = s[i];
 		i++;
 	}
-	return (dst);
+	dup[len] = '\0';
+	return (dup);
 }
 
-void	*ft_memmove(void *dest, const void *src, size_t n)
+char	*ft_strchr(const char *s, int c)
 {
-	unsigned char	*d;
-	unsigned char	*s;
+	size_t			i;
+	size_t			len;
+	unsigned char	uc;
 
-	if (!dest && !src)
-		return (NULL);
-	d = (unsigned char *) dest;
-	s = (unsigned char *) src;
-	if (d > s)
+	len = ft_strlen(s);
+	uc = (unsigned char) c;
+	i = 0;
+	while (i <= len)
 	{
-		while (n > 0)
-		{
-			d[n - 1] = s[n - 1];
-			n--;
-		}
-		return (dest);
+		if ((unsigned char) s[i] == uc)
+			return ((char *) &s[i]);
+		i++;
 	}
-	return (ft_memcpy(dest, src, n));
+	return (NULL);
 }
 
-char *ft_strjoin(char *s1, const char *s2, size_t len2)
+char	*ft_strjoin(char *s1, const char *s2, size_t len2)
 {
-    size_t len1 = s1 ? ft_strlen(s1) : 0;
-    char *result = (char *)malloc(len1 + len2 + 1);
-    if (!result)
-        return (NULL);
+	size_t	len1;
+	char	*result;
+	size_t	i;
+	size_t	j;
 
-    if (s1)
-        ft_memmove(result, s1, len1);
-    ft_memmove(result + len1, s2, len2);
-    result[len1 + len2] = '\0';
-
-    return (result);
+	if (s1)
+		len1 = ft_strlen(s1);
+	else
+		len1 = 0;
+	result = (char *) malloc(len1 + len2 + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	while (i < len1)
+	{
+		result[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (j < len2)
+	{
+		result[i++] = s2[j++];
+	}
+	return (result[len1 + len2] = '\0', result);
 }
