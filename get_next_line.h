@@ -19,6 +19,7 @@
 # include <fcntl.h>
 # include <unistd.h> 
 # include <stdlib.h> 
+#include <stdarg.h>
 
 typedef struct	s_raw
 {
@@ -27,8 +28,6 @@ typedef struct	s_raw
 }				t_raw;
 
 char *ft_strndup(const char *s, size_t len);
-char	*ft_calloc(size_t nmemb, size_t size);
-char	*ft_memmove(char *dest, const char *src, size_t n);
 size_t ft_read(int fd, char **buff, char **line, char **remainder);
 char *ft_line(int fd, char **buff, char **remainder);
 char *get_next_line(int fd);

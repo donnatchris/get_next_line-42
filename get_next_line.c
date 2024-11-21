@@ -12,33 +12,40 @@
 
 #include "get_next_line.h"
 
-char *ft_strndup(const char *s, size_t len)
+void	ft_free(size_t count, ...)
 {
-    char *dup = (char *)malloc(len + 1);
-    if (!dup)
-        return (NULL);
-    for (size_t i = 0; i < len; i++)
-        dup[i] = s[i];
-    dup[len] = '\0';
-    return (dup);
-}
+	va_list	args;
+	size_t	i;
+	void	*ptr;
 
-char	*ft_strdup(const char *s)
-{
-	size_t		i;
-	char		*dup;
-
-	dup = (char *) malloc (sizeof(*dup) * (ft_strlen(s) + 1));
-	if (dup == NULL)
-		return (NULL);
+	va_start(args, count);
 	i = 0;
-	while (s[i])
+	while (i < count)
 	{
-		dup[i] = s[i];
+		ptr = va_arg(args, void *);
+		if (ptr)
+			free(ptr);
 		i++;
 	}
-	dup[i] = '\0';
-	return (dup);
+	va_end(args);
+}
+
+char *ft_strndup(const char *s, size_t len)
+{
+    char 	*dup;
+	size_t	i;
+
+	dup = (char *)malloc(len + 1);
+    if (!dup)
+        return (NULL);
+	i = 0;
+	while(i < len)
+	{
+		dup[i] = s[i];
+    	i++;
+	}
+	dup[len] = '\0';
+    return (dup);
 }
 
 char	*ft_strchr(const char *s, int c)
@@ -59,57 +66,10 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_calloc(size_t nmemb, size_t size)
-{
-	char	*new;
-	size_t	i;
-	size_t	total_size;
-
-	total_size = nmemb * size;
-	if (total_size != nmemb * size)
-		return (NULL);
-	new = (char *) malloc(total_size);
-	if (new == NULL)
-		return (NULL);
-	i = 0;
-	while (i < nmemb * size)
-	{
-		new[i] = 0;
-		i++;
-	}
-	return (new);
-}
-
-char	*ft_memmove(char *dest, const char *src, size_t n)
-{
-	size_t			i;
-
-	if (!dest && !src)
-		return (NULL);
-	if (dest > src)
-	{
-		while (n > 0)
-		{
-			dest[n - 1] = src[n - 1];
-			n--;
-		}
-		return (dest);
-	}
-	else
-	{
-		i = 0;
-		while (i < n)
-		{
-			dest[i] = src[i];
-			i++;
-		}
-	}
-	return (dest);
-}
-
 size_t ft_read(int fd, char **buff, char **line, char **remainder)
 {
-    ssize_t	n_read;
+    size_t	n_read;
+	size_t	eol_index;
     char	*temp;
     char	*newline_pos;
 
@@ -122,20 +82,20 @@ size_t ft_read(int fd, char **buff, char **line, char **remainder)
         newline_pos = ft_strchr(*buff, '\n');
         if (newline_pos)
         {
-            size_t eol_index = newline_pos - *buff;
+            eol_index = newline_pos - *buff;
             temp = ft_strjoin(*line, *buff, eol_index + 1);
             if (!temp)
                 return (0);
-            free(*line);
+            ft_free(1, *line);
             *line = temp;
-            free(*remainder);
-            *remainder = ft_strdup(newline_pos + 1);
+            ft_free(1, *remainder);
+            *remainder = ft_strndup(newline_pos + 1, ft_strlen(newline_pos + 1));
             return (1);
         }
         temp = ft_strjoin(*line, *buff, n_read);
         if (!temp)
             return (0);
-        free(*line);
+        ft_free(1, *line);
         *line = temp;
     }
 }
@@ -146,26 +106,27 @@ char *ft_line(int fd, char **buff, char **remainder)
     char	*line;
 
     if (*remainder)
+	{
         newline_pos = ft_strchr(*remainder, '\n');
         if (newline_pos)
         {
             line = ft_strndup(*remainder, newline_pos - *remainder + 1);
-            char *new_remainder = ft_strdup(newline_pos + 1);
-            free(*remainder);
+            char *new_remainder = ft_strndup(newline_pos + 1, ft_strlen(newline_pos + 1));
+			if (!new_remainder)
+				return (line);
+            ft_free(1, *remainder);
             *remainder = new_remainder;
             return (line);
         }
-        line = ft_strdup(*remainder);
-        free(*remainder);
+        line = ft_strndup(*remainder, ft_strlen(*remainder));
+        ft_free(1, *remainder);
         *remainder = NULL;
     }
     else
-    {
         line = NULL;
-    }
     if (ft_read(fd, buff, &line, remainder) == 0)
     {
-        free(line);
+        ft_free(1, line);
         return (NULL);
     }
     return (line);
@@ -183,11 +144,10 @@ char *get_next_line(int fd)
     if (!buff)
         return (NULL);
     line = ft_line(fd, &buff, &remainder);
-    free(buff);
+    ft_free(1, buff);
     return (line);
 }
 
-/*
 #include <stdio.h>
 int main(void)
 {
@@ -213,4 +173,3 @@ int main(void)
     }
     return (0);
 }
-*/
