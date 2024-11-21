@@ -12,6 +12,24 @@
 
 #include "get_next_line.h"
 
+size_t	ft_newline_in_buff(char **newline_pos, char **buff, char **line, char **remainder)
+{
+	size_t	eol_index;
+	char	*temp;
+
+
+			eol_index = *newline_pos - *buff;
+            temp = ft_strjoin(*line, *buff, eol_index + 1);
+            if (!temp)
+                return (0);
+            ft_free(1, *line);
+            *line = temp;
+            ft_free(1, *remainder);
+            *remainder = ft_strndup(*newline_pos + 1, ft_strlen(*newline_pos + 1));
+            return (1);
+
+}
+
 size_t ft_read(int fd, char **buff, char **line, char **remainder)
 {
     size_t	n_read;
@@ -28,15 +46,7 @@ size_t ft_read(int fd, char **buff, char **line, char **remainder)
         newline_pos = ft_strchr(*buff, '\n');
         if (newline_pos)
         {
-            eol_index = newline_pos - *buff;
-            temp = ft_strjoin(*line, *buff, eol_index + 1);
-            if (!temp)
-                return (0);
-            ft_free(1, *line);
-            *line = temp;
-            ft_free(1, *remainder);
-            *remainder = ft_strndup(newline_pos + 1, ft_strlen(newline_pos + 1));
-            return (1);
+			return (ft_newline_in_buff(&newline_pos, buff, line, remainder));
         }
         temp = ft_strjoin(*line, *buff, n_read);
         if (!temp)
