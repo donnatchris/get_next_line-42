@@ -1,34 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/15 14:54:43 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/15 14:55:15 by chdonnat         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "get_next_line.h"
-
-void	ft_free(size_t count, ...)
-{
-	va_list	args;
-	size_t	i;
-	void	*ptr;
-
-	va_start(args, count);
-	i = 0;
-	while (i < count)
-	{
-		ptr = va_arg(args, void *);
-		if (ptr)
-			free(ptr);
-		i++;
-	}
-	va_end(args);
-}
 
 size_t	ft_strlen(const char *str)
 {
@@ -40,66 +10,73 @@ size_t	ft_strlen(const char *str)
 	return (len);
 }
 
-char	*ft_strndup(const char *s, size_t len)
+int	ft_found_newline(t_list *stash)
 {
-	char	*dup;
-	size_t	i;
+	int		i;
+	t_list	*current;
 
-	dup = (char *)malloc(len + 1);
-	if (!dup)
-		return (NULL);
+	if (!stash)
+		return (0);
+	current = ft_lst_get_last(stash);
 	i = 0;
-	while (i < len)
+	while (current->content[i])
 	{
-		dup[i] = s[i];
+		if (current->content[i] == '\n')
+			return (1);
 		i++;
 	}
-	dup[len] = '\0';
-	return (dup);
+	return (0);
 }
 
-char	*ft_strchr(const char *s, int c)
+void	ft_free_stash(t_list *stash)
 {
-	size_t			i;
-	size_t			len;
-	unsigned char	uc;
+	t_list	*current;
+	t_list	*next;
 
-	len = ft_strlen(s);
-	uc = (unsigned char) c;
-	i = 0;
-	while (i <= len)
+	current = stash;
+	while (current)
 	{
-		if ((unsigned char) s[i] == uc)
-			return ((char *) &s[i]);
-		i++;
+		free(current->content);
+		next = current->next;
+		free(current);
+		current = next;
 	}
-	return (NULL);
 }
 
-char	*ft_strjoin(char *s1, const char *s2, size_t len2)
+t_list	*ft_lst_get_last(t_list *stash)
 {
-	size_t	len1;
-	char	*result;
-	size_t	i;
-	size_t	j;
+	t_list	*current;
 
-	if (s1)
-		len1 = ft_strlen(s1);
-	else
-		len1 = 0;
-	result = (char *) malloc(len1 + len2 + 1);
-	if (!result)
-		return (NULL);
+	current = stash;
+	while(current && current->next)
+		current = current->next;
+	return (current);
+}
+
+void	ft_clean_stash(t_list	**p_stash)
+{
+	t_list	*last;
+	t_list	*clean_node;
+	int i;
+	int	j;
+
+	clean_node = (t_list *) malloc(sizeof(t_list));
+	if (!(*p_stash) || !clean_node)
+		return ;
+	clean_node->next = NULL;
+	last = ft_lst_get_last(*p_stash);
 	i = 0;
-	while (i < len1)
-	{
-		result[i] = s1[i];
+	while (last->content[i] && last->content[i] != '\n')
 		i++;
-	}
+	if (last->content && last->content[i] == '\n')
+		i++;
+	clean_node->content = (char *) malloc((ft_strlen(last->content) - i) + 1);
+	if (!(clean_node->content))
+		return ;
 	j = 0;
-	while (j < len2)
-	{
-		result[i++] = s2[j++];
-	}
-	return (result[len1 + len2] = '\0', result);
+	while (last->content[i])
+		clean_node->content[j++] = last->content[i++];
+	clean_node->content[j] = '\0';
+	ft_free_stash(*p_stash);
+	*p_stash = clean_node;
 }
