@@ -10,14 +10,14 @@ size_t	ft_strlen(const char *str)
 	return (len);
 }
 
-int	ft_found_newline(t_list *stash)
+int	ft_has_newline(t_list *list)
 {
 	int		i;
 	t_list	*current;
 
-	if (!stash)
+	if (!list)
 		return (0);
-	current = ft_lst_get_last(stash);
+	current = ft_lst_get_last(list);
 	i = 0;
 	while (current->content[i])
 	{
@@ -28,12 +28,12 @@ int	ft_found_newline(t_list *stash)
 	return (0);
 }
 
-void	ft_free_stash(t_list *stash)
+void	ft_free_list(t_list *list)
 {
 	t_list	*current;
 	t_list	*next;
 
-	current = stash;
+	current = list;
 	while (current)
 	{
 		free(current->content);
@@ -43,28 +43,28 @@ void	ft_free_stash(t_list *stash)
 	}
 }
 
-t_list	*ft_lst_get_last(t_list *stash)
+t_list	*ft_lst_get_last(t_list *list)
 {
 	t_list	*current;
 
-	current = stash;
-	while(current && current->next)
+	current = list;
+	while (current && current->next)
 		current = current->next;
 	return (current);
 }
 
-void	ft_clean_stash(t_list	**p_stash)
+void	ft_clean_list(t_list	**p_list)
 {
 	t_list	*last;
 	t_list	*clean_node;
-	int i;
-	int	j;
+	int		i;
+	int		j;
 
 	clean_node = (t_list *) malloc(sizeof(t_list));
-	if (!(*p_stash) || !clean_node)
+	if (!(*p_list) || !clean_node)
 		return ;
 	clean_node->next = NULL;
-	last = ft_lst_get_last(*p_stash);
+	last = ft_lst_get_last(*p_list);
 	i = 0;
 	while (last->content[i] && last->content[i] != '\n')
 		i++;
@@ -77,6 +77,6 @@ void	ft_clean_stash(t_list	**p_stash)
 	while (last->content[i])
 		clean_node->content[j++] = last->content[i++];
 	clean_node->content[j] = '\0';
-	ft_free_stash(*p_stash);
-	*p_stash = clean_node;
+	ft_free_list(*p_list);
+	*p_list = clean_node;
 }

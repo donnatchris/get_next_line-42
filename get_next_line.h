@@ -11,21 +11,21 @@
 # include <sys/uio.h>
 # include <unistd.h>
 
-typedef struct	s_list
+typedef struct s_list
 {
 	char			*content;
-	struct	s_list	*next;
+	struct s_list	*next;
 }					t_list;
 
-size_t 	ft_strlen(const char *str);
-int 	ft_found_newline(t_list *stash);
-void	ft_free_stash(t_list *stash);
-t_list	*ft_lst_get_last(t_list *stash);
-void	ft_clean_stash(t_list **stash);
+size_t	ft_strlen(const char *str);
+int		ft_has_newline(t_list *list);
+void	ft_free_list(t_list *list);
+t_list	*ft_lst_get_last(t_list *list);
+void	ft_clean_list(t_list **list);
 char	*get_next_line(int fd);
-void	ft_read_and_stash(int fd, t_list **stash);
-void	ft_add_to_stash(t_list **stash, char *buf, int readed);
-void	ft_extract_line(t_list *stash, char **line);
-void	ft_generate_line(char **line, t_list *stash);
+void	ft_read_to_list(int fd, t_list **list);
+void	ft_add_to_list(t_list **list, char *buf, int n_read);
+void	ft_extract_line(t_list *list, char **line);
+void	ft_create_line(char **line, t_list *list);
 
 #endif
