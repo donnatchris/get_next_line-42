@@ -6,7 +6,7 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 09:37:15 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 15:22:32 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:30:06 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,6 @@ char	*get_next_line(int fd)
 			free(list);
 			list = temp;
 		}
-		free(list);
 	}
 	if (!list)
 		return (NULL);

@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/25 09:36:15 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 15:00:18 by chdonnat         ###   ########.fr       */
+/*   Created: 2024/11/25 15:32:21 by chdonnat          #+#    #+#             */
+/*   Updated: 2024/11/25 15:35:29 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 void	ft_add_to_list(t_list **p_list, char *buff, int readed)
 {
@@ -41,7 +41,7 @@ void	ft_add_to_list(t_list **p_list, char *buff, int readed)
 	last->next = new_node;
 }
 
-void	ft_read_to_list(int fd, t_list **p_list)
+int	ft_read_to_list(int fd, t_list **p_list)
 {
 	char	*buff;
 	int		readed;
@@ -51,19 +51,18 @@ void	ft_read_to_list(int fd, t_list **p_list)
 	{
 		buff = (char *) malloc(BUFFER_SIZE + 1);
 		if (buff == 0)
-			return ;
+			return (readed);
 		readed = (int) read(fd, buff, BUFFER_SIZE);
-		if (readed == -1)
+		if ((*p_list == 0 && readed == 0) || readed == -1)
 		{
-			free(buff);
-			return (free(*p_list));
+			free (buff);
+			return (readed);
 		}
-		if ((*p_list == 0 && readed == 0))
-			return (free(buff));
 		buff[readed] = '\0';
 		ft_add_to_list(p_list, buff, readed);
 		free (buff);
 	}
+	return (readed);
 }
 
 void	ft_generate_line(char **p_line, t_list *list)
@@ -121,60 +120,43 @@ void	ft_extract_line(t_list *list, char **p_line)
 char	*get_next_line(int fd)
 {
 	static t_list	*list[1024];
-	char			*line[1024];
+	char			*line;
+	t_list			*temp;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line[fd] = NULL;
-	ft_read_to_list(fd, &list[fd]);
+	if (ft_read_to_list(fd, &list[fd]) == -1)
+	{
+		while (list[fd])
+		{
+			temp = list[fd]->next;
+			free(list[fd]->content);
+			free(list[fd]);
+			list[fd] = temp;
+		}
+	}
 	if (!list[fd])
 		return (NULL);
-	ft_extract_line(list[fd], &line[fd]);
+	ft_extract_line(list[fd], &line);
 	ft_clean_list(&list[fd]);
-	if (line[fd][0] == '\0')
-	{
-		ft_free_list(list[fd]);
-		list[fd] = NULL;
-		free(line[fd]);
-		return (NULL);
-	}
-	return (line[fd]);
+	if (line[0] == '\0')
+		return (ft_free_list(list[fd]), list[fd] = NULL, free(line), NULL);
+	return (line);
 }
 /*
 #include <stdio.h>
 int main(void)
 {
-	int		fd[1024];
-	char	*line[1024];
+	int	fd;
+	char	*line;
 
-
-	fd[1] = open("test", O_RDONLY);
-	while((line = get_next_line(fd[1])) != NULL)
+	fd = open("test", O_RDONLY);
+	while((line = get_next_line(fd)) != NULL)
 	{
 		printf("%s", line);
 		free(line);
 	}
-	close(fd[1]);
-	fd[2] = open("test2", O_RDONLY);
-	while((line = get_next_line(fd[2])) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-	}
-	close(fd[2]);
-	
-	fd[1] = open("test", O_RDONLY);
-	fd[2] = open("test2", O_RDONLY);
-	while((line[1] = get_next_line(fd[1])) != NULL && \
-			(line[2] = get_next_line(fd[2])) != NULL)
-	{
-		printf("%s", line[1]);
-		free(line[1]);
-		printf("%s", line[2]);
-		free(line[2]);
-	}
-	close(fd[1]);
-	close(fd[2]);
+	close(fd);
 	return (0);
 }
 */

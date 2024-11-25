@@ -6,11 +6,11 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 09:37:31 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 09:37:36 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:30:30 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *str)
 {
