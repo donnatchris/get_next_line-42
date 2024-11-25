@@ -6,7 +6,7 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 09:37:15 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 09:37:17 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:22:32 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	ft_add_to_list(t_list **p_list, char *buff, int readed)
 	last->next = new_node;
 }
 
-void	ft_read_to_list(int fd, t_list **p_list)
+int	ft_read_to_list(int fd, t_list **p_list)
 {
 	char	*buff;
 	int		readed;
@@ -51,17 +51,18 @@ void	ft_read_to_list(int fd, t_list **p_list)
 	{
 		buff = (char *) malloc(BUFFER_SIZE + 1);
 		if (buff == 0)
-			return ;
+			return (readed);
 		readed = (int) read(fd, buff, BUFFER_SIZE);
 		if ((*p_list == 0 && readed == 0) || readed == -1)
 		{
 			free (buff);
-			return ;
+			return (readed);
 		}
 		buff[readed] = '\0';
 		ft_add_to_list(p_list, buff, readed);
 		free (buff);
 	}
+	return (readed);
 }
 
 void	ft_generate_line(char **p_line, t_list *list)
@@ -120,22 +121,27 @@ char	*get_next_line(int fd)
 {
 	static t_list	*list = NULL;
 	char			*line;
+	t_list			*temp;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = NULL;
-	ft_read_to_list(fd, &list);
+	if (ft_read_to_list(fd, &list) == -1)
+	{
+		while (list)
+		{
+			temp = list->next;
+			free(list->content);
+			free(list);
+			list = temp;
+		}
+		free(list);
+	}
 	if (!list)
 		return (NULL);
 	ft_extract_line(list, &line);
 	ft_clean_list(&list);
 	if (line[0] == '\0')
-	{
-		ft_free_list(list);
-		list = NULL;
-		free(line);
-		return (NULL);
-	}
+		return (ft_free_list(list), list = NULL, free(line), NULL);
 	return (line);
 }
 /*

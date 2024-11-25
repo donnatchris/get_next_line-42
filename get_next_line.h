@@ -6,7 +6,7 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 09:37:23 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 09:37:25 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:03:40 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	ft_free_list(t_list *list);
 t_list	*ft_lst_get_last(t_list *list);
 void	ft_clean_list(t_list **list);
 char	*get_next_line(int fd);
-void	ft_read_to_list(int fd, t_list **list);
+int		ft_read_to_list(int fd, t_list **list);
 void	ft_add_to_list(t_list **list, char *buf, int n_read);
 void	ft_extract_line(t_list *list, char **line);
 void	ft_create_line(char **line, t_list *list);

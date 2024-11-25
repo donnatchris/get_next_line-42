@@ -6,7 +6,7 @@
 /*   By: chdonnat <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 09:36:15 by chdonnat          #+#    #+#             */
-/*   Updated: 2024/11/25 09:38:58 by chdonnat         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:00:18 by chdonnat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ char	*get_next_line(int fd)
 	static t_list	*list[1024];
 	char			*line[1024];
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line[fd], 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line[fd] = NULL;
 	ft_read_to_list(fd, &list[fd]);
