@@ -1,3 +1,6 @@
+# PROJECT GET_NEXT_LINE FOR 42
+By donnqtchris
+
 ## AIM OF THE PROJECT
 This project will not only allow you to add a very practical function to your collection but also introduce you to a surprising new element of programming in C: static variables.
 
